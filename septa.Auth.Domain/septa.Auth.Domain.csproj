@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interface\Repository\**" />
+    <Compile Remove="Repository\**" />
+    <Compile Remove="Services\Store\Serialization\**" />
+    <Compile Remove="Services\TokenCleanup\**" />
+    <Compile Remove="ViewModel\**" />
+    <EmbeddedResource Remove="Interface\Repository\**" />
+    <EmbeddedResource Remove="Repository\**" />
+    <EmbeddedResource Remove="Services\Store\Serialization\**" />
+    <EmbeddedResource Remove="Services\TokenCleanup\**" />
+    <EmbeddedResource Remove="ViewModel\**" />
+    <None Remove="Interface\Repository\**" />
+    <None Remove="Repository\**" />
+    <None Remove="Services\Store\Serialization\**" />
+    <None Remove="Services\TokenCleanup\**" />
+    <None Remove="ViewModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interface\Service\IPersistentGrantSerializer.cs" />
+    <Compile Remove="Services\DynamicPermissionsAuthorizationHandler.cs" />
+    <Compile Remove="Services\Store\TokenCleanupHost.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="DNTCommon.Web.Core" Version="1.8.2" />
+    <PackageReference Include="DNTPersianUtils.Core" Version="3.6.5" />
+    <PackageReference Include="IdentityServer4" Version="4.0.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.5" />
+  </ItemGroup>
+
+</Project>
