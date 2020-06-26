@@ -55,9 +55,9 @@ namespace septa.Auth.Domain.Entities
 
         public bool IsActive { get; set; } = true;
 
-        public override string NormalizedUserName { get => this.UserName.ToUpper(); set => value = this.UserName.ToUpper(); }
-
-        public override string NormalizedEmail { get => this.Email?.ToUpper(); set => value = this.Email?.ToUpper(); }
+//        public override string NormalizedUserName { get => this.UserName.ToUpper(); set => value = this.UserName.ToUpper(); }
+//
+//        public override string NormalizedEmail { get => this.Email?.ToUpper(); set => value = this.Email?.ToUpper(); }
 
 
         public virtual ICollection<UserUsedPassword> UserUsedPasswords { get; set; }

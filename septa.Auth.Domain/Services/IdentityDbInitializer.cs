@@ -82,6 +82,7 @@ namespace septa.Auth.Domain.Services
                 // How to add initial data to the DB directly
                 using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
                 {
+                    //SaveStandardIdentityResources(context).Wait();
 
                     if (!context.Roles.Any())
                     {
@@ -122,6 +123,7 @@ namespace septa.Auth.Domain.Services
                 {
                     throw new InvalidOperationException(result.DumpErrors());
                 }
+
             }
         }
 
@@ -194,7 +196,69 @@ namespace septa.Auth.Domain.Services
 
             return IdentityResult.Success;
         }
+
+
+
+
+        //public async Task SaveStandardIdentityResources(ApplicationDbContext context)
+        //{
+        //    var resources = new[]
+        //    {
+        //        new IdentityServer4.Models.IdentityResources.OpenId(),
+        //        new IdentityServer4.Models.IdentityResources.Profile(),
+        //        new IdentityServer4.Models.IdentityResources.Email(),
+        //        new IdentityServer4.Models.IdentityResources.Address(),
+        //        new IdentityServer4.Models.IdentityResources.Phone(),
+        //        new IdentityServer4.Models.IdentityResource("role", "Roles of the user", new[] {"role"})
+        //    };
+
+
+        //    foreach (var resource in resources)
+        //    {
+        //        foreach (var claimType in resource.UserClaims)
+        //        {
+        //            await AddClaimTypeIfNotExistsAsync(claimType, context);
+        //        }
+
+        //        await AddIdentityResourceIfNotExistsAsync(resource, context);
+        //    }
+        //}
+
+
+
+        //protected virtual async Task AddIdentityResourceIfNotExistsAsync(IdentityServer4.Models.IdentityResource resource, ApplicationDbContext context)
+        //{
+        //    if (await IdentityResourceRepository.CheckNameExistAsync(resource.Name))
+        //    {
+        //        return;
+        //    }
+
+        //    await IdentityResourceRepository.InsertAsync(
+        //        new IdentityResource(
+        //            GuidGenerator.Create(),
+        //            resource
+        //        )
+        //    );
+        //}
+
+        //protected virtual async Task AddClaimTypeIfNotExistsAsync(string claimType, ApplicationDbContext context)
+        //{
+        //    if (await context.Clients.Any(x=>x.ty))
+        //    {
+        //        return;
+        //    }
+
+        //    await ClaimTypeRepository.InsertAsync(
+        //        new IdentityClaimType(
+        //            GuidGenerator.Create(),
+        //            claimType,
+        //            isStatic: true
+        //        )
+        //    );
+        //}
+
     }
+
 
 
 

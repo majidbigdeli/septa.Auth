@@ -7,6 +7,7 @@ using septa.Auth.Domain.Services;
 using septa.Auth.Domain.Settings;
 using septa.Auth.Domain.Settings.Enum;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace septa.Auth.Hellper
 {
@@ -44,26 +45,6 @@ namespace septa.Auth.Hellper
         {
             return siteSettings.ActiveDatabase == ActiveDatabase.SqlServer;
         }
-    }
-
-
-    public static class Config
-    {
-        public static void GetIdentityResources()
-        {
-            var resources = new[]
-            {
-                new IdentityServer4.Models.IdentityResources.OpenId(),
-                new IdentityServer4.Models.IdentityResources.Profile(),
-                new IdentityServer4.Models.IdentityResources.Email(),
-                new IdentityServer4.Models.IdentityResources.Address(),
-                new IdentityServer4.Models.IdentityResources.Phone(),
-                new IdentityServer4.Models.IdentityResource("role", "Roles of the user", new[] {"role"})
-            };
-
-        }
-
-
     }
 
 }
