@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Stores;
+﻿using IdentityServer4.Events;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -88,6 +90,7 @@ namespace septa.Auth.Hellper
             services.AddTransient<IGuidGenerator, SequentialGuidGenerator>();
             services.AddTransient<IClientRepository, ClientRepository>();
             services.AddTransient<IIdentityResourceDataSeeder, IdentityResourceDataSeeder>();
+            services.AddTransient<IEventService, DefaultEventService>();
 
 
             return services;
