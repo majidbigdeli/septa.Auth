@@ -43,6 +43,7 @@ namespace septa.Auth.Hellper
             services.AddScoped<IUserValidator<User>, CustomUserValidator>();
             services.AddScoped<UserValidator<User>, CustomUserValidator>();
 
+
             services.AddScoped<IUserClaimsPrincipalFactory<User>, ApplicationClaimsPrincipalFactory>();
             services.AddScoped<UserClaimsPrincipalFactory<User, Role>, ApplicationClaimsPrincipalFactory>();
 

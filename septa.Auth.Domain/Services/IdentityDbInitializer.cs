@@ -242,7 +242,6 @@ namespace septa.Auth.Domain.Services
                 "phone_number",
                 "role",
                 "phone_number_verified",
-                "RRRRRRRRRRRR"
             };
 
             await CreateApiResourceAsync("PerformanceEvaluation", commonApiUserClaims);

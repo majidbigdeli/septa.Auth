@@ -76,12 +76,13 @@ namespace septa.Auth
             })
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<User>()
-                .AddProfileService<AspNetIdentityProfileService>()
+               // .AddProfileService<AspNetIdentityProfileService>()
+                .AddProfileService<ProfileService>()
                 .AddResourceOwnerValidator<SeptaResourceOwnerPasswordValidator>()
                 .AddClientStore<ClientStore>()
                 .AddResourceStore<ResourceStore>();
-               // .AddCorsPolicyService<CorsPolicyService>();
-               //  .AddExtensionGrantValidator<AuthenticationGrant>();
+            // .AddCorsPolicyService<CorsPolicyService>();
+            //  .AddExtensionGrantValidator<AuthenticationGrant>();
 
             services.Replace(ServiceDescriptor.Transient<IClaimsService, SeptaClaimsService>());
 
