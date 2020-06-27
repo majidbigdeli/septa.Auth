@@ -256,7 +256,7 @@ namespace septa.Auth.Domain.Services
 
             var apiScope = await _apiScopeRepository.FindByNameAsync(name);
 
-            if (apiScope != null)
+            if (apiScope == null)
             {
                 apiScope = await _apiScopeRepository.InsertAsync(
                 new ApiScope()
