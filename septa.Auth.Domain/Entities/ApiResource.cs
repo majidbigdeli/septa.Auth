@@ -26,7 +26,6 @@ namespace septa.Auth.Domain.Entities
         public DateTime? LastAccessed { get; set; }
         public bool NonEditable { get; set; }
 
-
         public virtual ApiResourceClaim FindClaim(string type)
         {
             return UserClaims?.FirstOrDefault(c => c.Type == type);

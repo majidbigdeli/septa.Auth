@@ -55,7 +55,7 @@ namespace septa.Auth.Domain.Services.seed
             }
 
             var entity = resource.ToEntity();
-            await IdentityResourceRepository.InsertAsync(entity);
+            await IdentityResourceRepository.InsertAsync(entity,true);
 
         }
 
@@ -72,7 +72,7 @@ namespace septa.Auth.Domain.Services.seed
                     GuidGenerator.Create(),
                     claimType,
                     isStatic: true
-                )
+                ), true
             );
         }
 

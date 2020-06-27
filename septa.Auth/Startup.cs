@@ -4,13 +4,11 @@ using IdentityModel;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using septa.Auth.Domain;
 using septa.Auth.Domain.Contexts;
 using septa.Auth.Domain.Entities;
 using septa.Auth.Domain.Hellper;
@@ -20,7 +18,6 @@ using septa.Auth.Domain.Settings;
 using septa.Auth.Hellper;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 namespace septa.Auth
 {

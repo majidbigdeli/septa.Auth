@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using septa.Auth.Domain.Interface;
 
 namespace septa.Auth.Domain.Entities
@@ -14,13 +16,19 @@ namespace septa.Auth.Domain.Entities
         public bool ShowInDiscoveryDocument { get; set; } = true;
         public List<ApiScopeClaim> UserClaims { get; set; } = new List<ApiScopeClaim>();
         public List<ApiScopeProperty> Properties { get; set; } = new List<ApiScopeProperty>();
+
+        public virtual ApiScopeClaim FindClaim(string type)
+        {
+            return UserClaims?.FirstOrDefault(c => c.Type == type);
+        }
+
+        public virtual void AddUserClaim([NotNull] string type)
+        {
+            UserClaims.Add(new ApiScopeClaim()
+            {
+                ScopeId = Id,
+                Type = type
+            });
+        }
     }
-
-
-
-
-
-
-
-
 }

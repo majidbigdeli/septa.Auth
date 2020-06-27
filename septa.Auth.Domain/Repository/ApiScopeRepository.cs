@@ -24,9 +24,17 @@ namespace septa.Auth.Domain.Repository
                 .PageBy(skipCount, maxResultCount)
                 .ToListAsync(GetCancellationToken(cancellationToken));
         }
+
+        public virtual async Task<ApiScope> FindByNameAsync( string name, bool includeDetails = true, CancellationToken cancellationToken = default)
+        {
+            var query = from apiScope in DbSet.IncludeDetails(includeDetails)
+                        where apiScope.Name == name
+                        select apiScope;
+
+            return await query
+                .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+        }
+
     }
-
-
-
 
 }

@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 
 using ApiResource = septa.Auth.Domain.Entities.ApiResource;
 using Client = septa.Auth.Domain.Entities.Client;
+using ApiScope = septa.Auth.Domain.Entities.ApiScope;
+
 
 namespace septa.Auth.Domain.Services
 {
@@ -32,6 +34,7 @@ namespace septa.Auth.Domain.Services
         private readonly IApiResourceRepository _apiResourceRepository;
         private readonly IIdentityResourceDataSeeder _identityResourceDataSeeder;
         private readonly IClientRepository _clientRepository;
+        private readonly IApiScopeRepository _apiScopeRepository;
         private readonly IConfiguration _configuration;
         private readonly IApplicationRoleManager _roleManager;
         private readonly IServiceScopeFactory _scopeFactory;
@@ -45,6 +48,7 @@ namespace septa.Auth.Domain.Services
             IApiResourceRepository apiResourceRepository,
             IIdentityResourceDataSeeder identityResourceDataSeeder,
             IClientRepository clientRepository,
+            IApiScopeRepository apiScopeRepository,
             IConfiguration configuration
             )
         {
@@ -64,6 +68,7 @@ namespace septa.Auth.Domain.Services
             _apiResourceRepository = apiResourceRepository;
             _identityResourceDataSeeder = identityResourceDataSeeder;
             _clientRepository = clientRepository;
+            _apiScopeRepository = apiScopeRepository;
             _configuration = configuration;
             _logger.CheckArgumentIsNull(nameof(_logger));
         }
@@ -236,11 +241,48 @@ namespace septa.Auth.Domain.Services
                 "name",
                 "phone_number",
                 "phone_number_verified",
-                "role"
             };
 
             await CreateApiResourceAsync("PerformanceEvaluation", commonApiUserClaims);
+
         }
+
+        private async Task<ApiScope> CreateApiScopeAsync(string name)
+        {
+            var apiScopeClaims = new[]
+            {
+                "role"
+            };
+
+            var apiScope = await _apiScopeRepository.FindByNameAsync(name);
+
+            if (apiScope != null)
+            {
+                apiScope = await _apiScopeRepository.InsertAsync(
+                new ApiScope()
+                {
+                    DisplayName = "PerformanceEvaluation API",
+                    Name = "PerformanceEvaluation",
+                    Emphasize = false,
+                    Enabled = true,
+                    Required = false,
+                    ShowInDiscoveryDocument = true
+                }, true); ;
+            }
+
+
+            foreach (var claim in apiScopeClaims)
+            {
+                if (apiScope.FindClaim(claim) == null)
+                {
+                    apiScope.AddUserClaim(claim);
+                }
+            }
+            
+            return await _apiScopeRepository.UpdateAsync(apiScope, true);
+
+        }
+
         private async Task<ApiResource> CreateApiResourceAsync(string name, IEnumerable<string> claims)
         {
             var apiResource = await _apiResourceRepository.FindByNameAsync(name);
@@ -250,7 +292,15 @@ namespace septa.Auth.Domain.Services
                     new ApiResource()
                     {
                         Name = name,
-                        DisplayName = name + "API"
+                        DisplayName = name + "API",
+                        Scopes = new List<ApiResourceScope>()
+                        {
+                            new ApiResourceScope()
+                            {
+                                Scope = "PerformanceEvaluation"
+                            }
+                        },
+
                     }, autoSave: true
                 );
             }
@@ -262,8 +312,8 @@ namespace septa.Auth.Domain.Services
                     apiResource.AddUserClaim(claim);
                 }
             }
+            return await _apiResourceRepository.UpdateAsync(apiResource, true);
 
-            return await _apiResourceRepository.UpdateAsync(apiResource);
         }
 
         private async Task CreateClientsAsync()
@@ -390,7 +440,7 @@ namespace septa.Auth.Domain.Services
             //    );
             //}
 
-            return await _clientRepository.UpdateAsync(client);
+            return await _clientRepository.UpdateAsync(client, true);
         }
     }
 }

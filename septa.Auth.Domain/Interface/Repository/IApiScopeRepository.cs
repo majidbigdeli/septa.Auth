@@ -16,6 +16,10 @@ namespace septa.Auth.Domain.Interface.Repository
             CancellationToken cancellationToken = default
         );
 
+        Task<ApiScope> FindByNameAsync(
+            string name,
+            bool includeDetails = true,
+            CancellationToken cancellationToken = default);
 
     }
 
