@@ -10,11 +10,4 @@ namespace septa.Auth.Domain.Entities
         public Client Client { get; set; }
     }
 
-
-
-
-
-
-
-
 }

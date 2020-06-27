@@ -12,8 +12,8 @@ namespace septa.Auth.Domain.Entities
         public bool Required { get; set; }
         public bool Emphasize { get; set; }
         public bool ShowInDiscoveryDocument { get; set; } = true;
-        public List<ApiScopeClaim> UserClaims { get; set; }
-        public List<ApiScopeProperty> Properties { get; set; }
+        public List<ApiScopeClaim> UserClaims { get; set; } = new List<ApiScopeClaim>();
+        public List<ApiScopeProperty> Properties { get; set; } = new List<ApiScopeProperty>();
     }
 
 

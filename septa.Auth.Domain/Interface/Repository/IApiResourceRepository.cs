@@ -1,5 +1,4 @@
 ﻿using septa.Auth.Domain.Entities;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace septa.Auth.Domain.Interface.Repository
 {
-    public interface IApiResourceRepository : IEfCoreRepository<ApiResource, Guid>
+    public interface IApiResourceRepository : IEfCoreRepository<ApiResource, int>
     {
         Task<ApiResource> FindByNameAsync(
             string name,
@@ -36,10 +35,8 @@ namespace septa.Auth.Domain.Interface.Repository
 
         Task<bool> CheckNameExistAsync(
             string name,
-            Guid? expectedId = null,
+            int? expectedId = null,
             CancellationToken cancellationToken = default
         );
     }
-
-
 }

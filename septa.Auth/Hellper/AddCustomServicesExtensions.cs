@@ -7,9 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using septa.Auth.Domain.Contexts;
 using septa.Auth.Domain.Entities;
 using septa.Auth.Domain.Interface;
-using septa.Auth.Domain.Interface.Service.Ef;
+using septa.Auth.Domain.Interface.Repository;
+using septa.Auth.Domain.Interface.seed;
+using septa.Auth.Domain.Interface.utilities;
+using septa.Auth.Domain.Repository;
 using septa.Auth.Domain.Services;
-using septa.Auth.Domain.Services.Ef;
+using septa.Auth.Domain.Services.seed;
+using septa.Auth.Domain.Services.utilities;
 using septa.Auth.Domain.Threading;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -60,11 +64,11 @@ namespace septa.Auth.Hellper
             services.AddScoped<IEmailSender, AuthMessageSender>();
             services.AddScoped<ISmsSender, AuthMessageSender>();
 
-            services.AddScoped<IPersistentGrantSerializer, PersistentGrantSerializer>();           
+            services.AddScoped<IPersistentGrantSerializer, PersistentGrantSerializer>();
 
 
-            // services.AddSingleton<IAntiforgery, NoBrowserCacheAntiforgery>();
-            // services.AddSingleton<IHtmlGenerator, NoBrowserCacheHtmlGenerator>();
+            //  services.AddSingleton<IAntiforgery, NoBrowserCacheAntiforgery>();
+            //    services.AddSingleton<IHtmlGenerator, NoBrowserCacheHtmlGenerator>();
 
             services.AddScoped<IIdentityDbInitializer, IdentityDbInitializer>();
             services.AddScoped<IUsedPasswordsService, UsedPasswordsService>();
@@ -76,12 +80,14 @@ namespace septa.Auth.Hellper
             services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
             services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
             services.AddTransient<ICancellationTokenProvider, HttpContextCancellationTokenProvider>();
-            services.AddTransient<IDbSchemaMigrator, DbSchemaMigrator>();
 
-
-
-
-
+            services.AddTransient<IApiResourceRepository, ApiResourceRepository>();
+            services.AddTransient<IApiScopeRepository, ApiScopeRepository>();
+            services.AddTransient<IIdentityResourceRepository, IdentityResourceRepository>();
+            services.AddTransient<IIdentityClaimTypeRepository, IdentityClaimTypeRepository>();
+            services.AddTransient<IGuidGenerator, SequentialGuidGenerator>();
+            services.AddTransient<IClientRepository, ClientRepository>();
+            services.AddTransient<IIdentityResourceDataSeeder, IdentityResourceDataSeeder>();
 
 
             return services;

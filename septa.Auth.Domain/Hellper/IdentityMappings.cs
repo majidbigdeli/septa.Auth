@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 using septa.Auth.Domain.Entities;
 using septa.Auth.Domain.Settings;
 
@@ -80,6 +81,17 @@ namespace septa.Auth.Domain.Hellper
                 builder.HasIndex(e => e.FriendlyName).IsUnique();
             });
         }
-    }
 
+        public static void ConfigureIdentity([NotNull] this ModelBuilder builder)
+        {
+            Check.NotNull(builder, nameof(builder));
+
+            builder.Entity<IdentityClaimType>(b =>
+            {
+                b.ToTable("ClaimTypes");
+                b.Property(uc => uc.Name).HasMaxLength(250).IsRequired(); // make unique
+                b.Property(uc => uc.ConcurrencyStamp).IsRequired().IsConcurrencyToken().HasMaxLength(2000).HasColumnName(nameof(IdentityClaimType.ConcurrencyStamp));
+            });
+        }
+    }
 }

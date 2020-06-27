@@ -5,12 +5,4 @@
         public int ScopeId { get; set; }
         public ApiScope Scope { get; set; }
     }
-
-
-
-
-
-
-
-
 }

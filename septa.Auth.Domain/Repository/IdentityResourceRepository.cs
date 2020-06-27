@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 
 namespace septa.Auth.Domain.Repository
 {
-    public class IdentityResourceRepository : EfCoreRepository<IdentityResource, Guid>, IIdentityResourceRepository
+    public class IdentityResourceRepository : EfCoreRepository<IdentityResource, int>, IIdentityResourceRepository
     {
         public IdentityResourceRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
@@ -58,24 +58,9 @@ namespace septa.Auth.Domain.Repository
                 .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
         }
 
-        public async Task<bool> CheckNameExistAsync(string name, Guid? expectedId = null, CancellationToken cancellationToken = default)
+        public async Task<bool> CheckNameExistAsync(string name, int? expectedId = null, CancellationToken cancellationToken = default)
         {
             return await DbSet.AnyAsync(ir => ir.Id != expectedId && ir.Name == name, cancellationToken: cancellationToken);
-        }
-    }
-
-    public class ApiScopeRepository : EfCoreRepository<ApiScope>, IApiScopeRepository
-    {
-        public ApiScopeRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
-        {
-        }
-        public async Task<List<ApiScope>> GetListAsync(string sorting, int skipCount, int maxResultCount, bool includeDetails = false, CancellationToken cancellationToken = default)
-        {
-            return await DbSet
-                .IncludeDetails(includeDetails)
-                .OrderBy(sorting ?? "name desc")
-                .PageBy(skipCount, maxResultCount)
-                .ToListAsync(GetCancellationToken(cancellationToken));
         }
     }
 }

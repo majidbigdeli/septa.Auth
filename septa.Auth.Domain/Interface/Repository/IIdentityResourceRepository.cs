@@ -1,12 +1,11 @@
 ﻿using septa.Auth.Domain.Entities;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace septa.Auth.Domain.Interface.Repository
 {
-    public interface IIdentityResourceRepository : IEfCoreRepository<IdentityResource, Guid>
+    public interface IIdentityResourceRepository : IEfCoreRepository<IdentityResource, int>
     {
         Task<List<IdentityResource>> GetListByScopesAsync(
             string[] scopeNames,
@@ -30,7 +29,7 @@ namespace septa.Auth.Domain.Interface.Repository
 
         Task<bool> CheckNameExistAsync(
             string name,
-            Guid? expectedId = null,
+            int? expectedId = null,
             CancellationToken cancellationToken = default
          );
     }

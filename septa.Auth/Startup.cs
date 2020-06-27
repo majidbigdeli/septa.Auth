@@ -166,7 +166,7 @@ namespace septa.Auth
 
             app.ApplicationServices.InitializeDb();
 
-            InitializeDatabase(app);
+         //   InitializeDatabase(app);
 
             app.UseCors("default");
             app.UseIdentityServer();
@@ -190,11 +190,5 @@ namespace septa.Auth
                 endpoints.MapControllers();
             });
         }
-
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            Config.GetIdentityResources();
-        }
-
     }
 }

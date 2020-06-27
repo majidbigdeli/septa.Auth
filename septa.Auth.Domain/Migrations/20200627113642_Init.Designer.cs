@@ -10,7 +10,7 @@ using septa.Auth.Domain.Contexts;
 namespace septa.Auth.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200626210754_Init")]
+    [Migration("20200627113642_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1364,6 +1364,75 @@ namespace septa.Auth.Domain.Migrations
                     b.HasIndex("Expiration");
 
                     b.ToTable("DeviceFlowCodes");
+                });
+
+            modelBuilder.Entity("septa.Auth.Domain.Entities.IdentityClaimType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(2000)")
+                        .HasMaxLength(2000);
+
+                    b.Property<string>("CreatedByBrowserName")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("CreatedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsStatic")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedByBrowserName")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ModifiedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(250)")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("Regex")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegexDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ValueType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClaimTypes");
                 });
 
             modelBuilder.Entity("septa.Auth.Domain.Entities.IdentityResource", b =>

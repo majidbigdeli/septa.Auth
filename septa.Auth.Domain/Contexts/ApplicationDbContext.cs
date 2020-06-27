@@ -35,15 +35,16 @@ namespace septa.Auth.Domain.Contexts
         public virtual DbSet<AppLogItem> AppLogItems { get; set; }
         public virtual DbSet<AppSqlCache> AppSqlCache { get; set; }
         public virtual DbSet<AppDataProtectionKey> AppDataProtectionKeys { get; set; }
+        public virtual DbSet<IdentityClaimType> IdentityClaimTypes { get; set; }
 
         #region Identity Server4
-        public DbSet<Client> Clients { get; set; }
-        public DbSet<ClientCorsOrigin> ClientCorsOrigins { get; set; }
-        public DbSet<IdentityResource> IdentityResources { get; set; }
-        public DbSet<ApiResource> ApiResources { get; set; }
-        public DbSet<ApiScope> ApiScopes { get; set; }
-        public DbSet<PersistedGrant> PersistedGrants { get; set; }
-        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
+        public virtual DbSet<Client> Clients { get; set; }
+        public virtual DbSet<ClientCorsOrigin> ClientCorsOrigins { get; set; }
+        public virtual DbSet<IdentityResource> IdentityResources { get; set; }
+        public virtual DbSet<ApiResource> ApiResources { get; set; }
+        public virtual DbSet<ApiScope> ApiScopes { get; set; }
+        public virtual DbSet<PersistedGrant> PersistedGrants { get; set; }
+        public virtual DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
 
         #endregion
 
@@ -186,6 +187,8 @@ namespace septa.Auth.Domain.Contexts
             builder.AddCustomIdentityMappings(siteSettings.Value);
 
             builder.ConfigureIdentityServer();
+
+            builder.ConfigureIdentity();
 
             // This should be placed here, at the end.
             builder.AddAuditableShadowProperties();

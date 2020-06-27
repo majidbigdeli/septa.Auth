@@ -5,18 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Interface\Repository\**" />
-    <Compile Remove="Repository\**" />
     <Compile Remove="Services\Store\Serialization\**" />
     <Compile Remove="Services\TokenCleanup\**" />
     <Compile Remove="ViewModel\**" />
-    <EmbeddedResource Remove="Interface\Repository\**" />
-    <EmbeddedResource Remove="Repository\**" />
     <EmbeddedResource Remove="Services\Store\Serialization\**" />
     <EmbeddedResource Remove="Services\TokenCleanup\**" />
     <EmbeddedResource Remove="ViewModel\**" />
-    <None Remove="Interface\Repository\**" />
-    <None Remove="Repository\**" />
     <None Remove="Services\Store\Serialization\**" />
     <None Remove="Services\TokenCleanup\**" />
     <None Remove="ViewModel\**" />

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityServer4.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,11 +10,17 @@ using septa.Auth.Domain.Contexts;
 using septa.Auth.Domain.Entities;
 using septa.Auth.Domain.Hellper;
 using septa.Auth.Domain.Interface;
+using septa.Auth.Domain.Interface.Repository;
+using septa.Auth.Domain.Interface.seed;
 using septa.Auth.Domain.Settings;
 using septa.Auth.Domain.Settings.Enum;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using ApiResource = septa.Auth.Domain.Entities.ApiResource;
+using Client = septa.Auth.Domain.Entities.Client;
 
 namespace septa.Auth.Domain.Services
 {
@@ -21,6 +29,10 @@ namespace septa.Auth.Domain.Services
         private readonly IOptionsSnapshot<SiteSettings> _adminUserSeedOptions;
         private readonly IApplicationUserManager _applicationUserManager;
         private readonly ILogger<IdentityDbInitializer> _logger;
+        private readonly IApiResourceRepository _apiResourceRepository;
+        private readonly IIdentityResourceDataSeeder _identityResourceDataSeeder;
+        private readonly IClientRepository _clientRepository;
+        private readonly IConfiguration _configuration;
         private readonly IApplicationRoleManager _roleManager;
         private readonly IServiceScopeFactory _scopeFactory;
 
@@ -29,7 +41,11 @@ namespace septa.Auth.Domain.Services
             IServiceScopeFactory scopeFactory,
             IApplicationRoleManager roleManager,
             IOptionsSnapshot<SiteSettings> adminUserSeedOptions,
-            ILogger<IdentityDbInitializer> logger
+            ILogger<IdentityDbInitializer> logger,
+            IApiResourceRepository apiResourceRepository,
+            IIdentityResourceDataSeeder identityResourceDataSeeder,
+            IClientRepository clientRepository,
+            IConfiguration configuration
             )
         {
             _applicationUserManager = applicationUserManager;
@@ -45,6 +61,10 @@ namespace septa.Auth.Domain.Services
             _adminUserSeedOptions.CheckArgumentIsNull(nameof(_adminUserSeedOptions));
 
             _logger = logger;
+            _apiResourceRepository = apiResourceRepository;
+            _identityResourceDataSeeder = identityResourceDataSeeder;
+            _clientRepository = clientRepository;
+            _configuration = configuration;
             _logger.CheckArgumentIsNull(nameof(_logger));
         }
 
@@ -64,7 +84,7 @@ namespace septa.Auth.Domain.Services
                     }
                     else
                     {
-                          context.Database.Migrate();
+                        context.Database.Migrate();
                     }
                 }
             }
@@ -123,6 +143,8 @@ namespace septa.Auth.Domain.Services
                 {
                     throw new InvalidOperationException(result.DumpErrors());
                 }
+
+                SeedIdentityServer().Wait();
 
             }
         }
@@ -197,70 +219,178 @@ namespace septa.Auth.Domain.Services
             return IdentityResult.Success;
         }
 
+        public async Task SeedIdentityServer()
+        {
+            await _identityResourceDataSeeder.CreateStandardResourcesAsync();
+            await CreateApiResourcesAsync();
+            await CreateClientsAsync();
 
+        }
 
+        private async Task CreateApiResourcesAsync()
+        {
+            var commonApiUserClaims = new[]
+            {
+                "email",
+                "email_verified",
+                "name",
+                "phone_number",
+                "phone_number_verified",
+                "role"
+            };
 
-        //public async Task SaveStandardIdentityResources(ApplicationDbContext context)
-        //{
-        //    var resources = new[]
-        //    {
-        //        new IdentityServer4.Models.IdentityResources.OpenId(),
-        //        new IdentityServer4.Models.IdentityResources.Profile(),
-        //        new IdentityServer4.Models.IdentityResources.Email(),
-        //        new IdentityServer4.Models.IdentityResources.Address(),
-        //        new IdentityServer4.Models.IdentityResources.Phone(),
-        //        new IdentityServer4.Models.IdentityResource("role", "Roles of the user", new[] {"role"})
-        //    };
+            await CreateApiResourceAsync("PerformanceEvaluation", commonApiUserClaims);
+        }
+        private async Task<ApiResource> CreateApiResourceAsync(string name, IEnumerable<string> claims)
+        {
+            var apiResource = await _apiResourceRepository.FindByNameAsync(name);
+            if (apiResource == null)
+            {
+                apiResource = await _apiResourceRepository.InsertAsync(
+                    new ApiResource()
+                    {
+                        Name = name,
+                        DisplayName = name + "API"
+                    }, autoSave: true
+                );
+            }
 
+            foreach (var claim in claims)
+            {
+                if (apiResource.FindClaim(claim) == null)
+                {
+                    apiResource.AddUserClaim(claim);
+                }
+            }
 
-        //    foreach (var resource in resources)
-        //    {
-        //        foreach (var claimType in resource.UserClaims)
-        //        {
-        //            await AddClaimTypeIfNotExistsAsync(claimType, context);
-        //        }
+            return await _apiResourceRepository.UpdateAsync(apiResource);
+        }
 
-        //        await AddIdentityResourceIfNotExistsAsync(resource, context);
-        //    }
-        //}
+        private async Task CreateClientsAsync()
+        {
+            var commonScopes = new[]
+            {
+                "email",
+                "openid",
+                "profile",
+                "role",
+                "phone",
+                "address",
+                "PerformanceEvaluation"
+            };
 
+            var configurationSection = _configuration.GetSection("IdentityServer:Clients");
 
+            //Web Client
+            var webClientId = configurationSection["PerformanceEvaluation_Web:ClientId"];
+            if (!webClientId.IsNullOrWhiteSpace())
+            {
+                var webClientRootUrl = configurationSection["PerformanceEvaluation_Web:RootUrl"].EnsureEndsWith('/');
 
-        //protected virtual async Task AddIdentityResourceIfNotExistsAsync(IdentityServer4.Models.IdentityResource resource, ApplicationDbContext context)
-        //{
-        //    if (await IdentityResourceRepository.CheckNameExistAsync(resource.Name))
-        //    {
-        //        return;
-        //    }
+                /* PerformanceEvaluation_Web client is only needed if you created a tiered
+                 * solution. Otherwise, you can delete this client. */
 
-        //    await IdentityResourceRepository.InsertAsync(
-        //        new IdentityResource(
-        //            GuidGenerator.Create(),
-        //            resource
-        //        )
-        //    );
-        //}
+                await CreateClientAsync(
+                    webClientId,
+                    commonScopes,
+                    new[] { "hybrid" },
+                    (configurationSection["PerformanceEvaluation_Web:ClientSecret"] ?? "1q2w3e*").Sha256(),
+                    redirectUri: $"{webClientRootUrl}signin-oidc",
+                    postLogoutRedirectUri: $"{webClientRootUrl}signout-callback-oidc"
+                );
+            }
 
-        //protected virtual async Task AddClaimTypeIfNotExistsAsync(string claimType, ApplicationDbContext context)
-        //{
-        //    if (await context.Clients.Any(x=>x.ty))
-        //    {
-        //        return;
-        //    }
+            //Console Test Client
+            var consoleClientId = configurationSection["PerformanceEvaluation_App:ClientId"];
+            if (!consoleClientId.IsNullOrWhiteSpace())
+            {
+                await CreateClientAsync(
+                    consoleClientId,
+                    commonScopes,
+                    new[] { "password", "client_credentials" },
+                    (configurationSection["PerformanceEvaluation_App:ClientSecret"] ?? "1q2w3e*").Sha256()
+                );
+            }
+        }
 
-        //    await ClaimTypeRepository.InsertAsync(
-        //        new IdentityClaimType(
-        //            GuidGenerator.Create(),
-        //            claimType,
-        //            isStatic: true
-        //        )
-        //    );
-        //}
+        private async Task<Client> CreateClientAsync(
+    string name,
+    IEnumerable<string> scopes,
+    IEnumerable<string> grantTypes,
+    string secret,
+    string redirectUri = null,
+    string postLogoutRedirectUri = null,
+    IEnumerable<string> permissions = null)
+        {
+            var client = await _clientRepository.FindByCliendIdAsync(name);
+            if (client == null)
+            {
+                client = await _clientRepository.InsertAsync(
+                    new Client()
+                    {
+                        ClientId = name,
+                        ClientName = name,
+                        ProtocolType = "oidc",
+                        Description = name,
+                        AlwaysIncludeUserClaimsInIdToken = true,
+                        AllowOfflineAccess = true,
+                        AbsoluteRefreshTokenLifetime = 86400, //365 days
+                        AccessTokenLifetime = 86400, //365 days
+                        AuthorizationCodeLifetime = 300,
+                        IdentityTokenLifetime = 300,
+                        RequireConsent = false
+                    },
+                    autoSave: true
+                );
+            }
 
+            foreach (var scope in scopes)
+            {
+                if (client.FindScope(scope) == null)
+                {
+                    client.AddScope(scope);
+                }
+            }
+
+            foreach (var grantType in grantTypes)
+            {
+                if (client.FindGrantType(grantType) == null)
+                {
+                    client.AddGrantType(grantType);
+                }
+            }
+
+            if (client.FindSecret(secret) == null)
+            {
+                client.AddSecret(secret);
+            }
+
+            if (redirectUri != null)
+            {
+                if (client.FindRedirectUri(redirectUri) == null)
+                {
+                    client.AddRedirectUri(redirectUri);
+                }
+            }
+
+            if (postLogoutRedirectUri != null)
+            {
+                if (client.FindPostLogoutRedirectUri(postLogoutRedirectUri) == null)
+                {
+                    client.AddPostLogoutRedirectUri(postLogoutRedirectUri);
+                }
+            }
+
+            //if (permissions != null)
+            //{
+            //    await _permissionDataSeeder.SeedAsync(
+            //        ClientPermissionValueProvider.ProviderName,
+            //        name,
+            //        permissions
+            //    );
+            //}
+
+            return await _clientRepository.UpdateAsync(client);
+        }
     }
-
-
-
-
-
 }

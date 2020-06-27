@@ -145,7 +145,9 @@ namespace septa.Auth.Domain.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
                     SecurityStamp = table.Column<string>(nullable: true),
@@ -166,8 +168,6 @@ namespace septa.Auth.Domain.Migrations
                     IsEmailPublic = table.Column<bool>(nullable: false),
                     Location = table.Column<string>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     CreatedByBrowserName = table.Column<string>(maxLength: 1000, nullable: true),
                     CreatedByIp = table.Column<string>(maxLength: 255, nullable: true),
                     CreatedByUserId = table.Column<int>(nullable: true),
@@ -179,6 +179,33 @@ namespace septa.Auth.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClaimTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(maxLength: 250, nullable: false),
+                    Required = table.Column<bool>(nullable: false),
+                    IsStatic = table.Column<bool>(nullable: false),
+                    Regex = table.Column<string>(nullable: true),
+                    RegexDescription = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    ValueType = table.Column<int>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(maxLength: 2000, nullable: false),
+                    CreatedByBrowserName = table.Column<string>(maxLength: 1000, nullable: true),
+                    CreatedByIp = table.Column<string>(maxLength: 255, nullable: true),
+                    CreatedByUserId = table.Column<int>(nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(nullable: true),
+                    ModifiedByBrowserName = table.Column<string>(maxLength: 1000, nullable: true),
+                    ModifiedByIp = table.Column<string>(maxLength: 255, nullable: true),
+                    ModifiedByUserId = table.Column<int>(nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClaimTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1236,6 +1263,9 @@ namespace septa.Auth.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUserUsedPasswords");
+
+            migrationBuilder.DropTable(
+                name: "ClaimTypes");
 
             migrationBuilder.DropTable(
                 name: "ClientClaims");

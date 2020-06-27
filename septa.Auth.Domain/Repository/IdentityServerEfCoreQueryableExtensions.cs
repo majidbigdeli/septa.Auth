@@ -17,7 +17,7 @@ namespace septa.Auth.Domain.Repository
                 .Include(x => x.Secrets)
                 .Include(x => x.UserClaims)
                 .Include(x => x.Scopes)
-                .ThenInclude(s => s.UserClaims);
+                .Include(s => s.Properties);
         }
 
         public static IQueryable<IdentityResource> IncludeDetails(this IQueryable<IdentityResource> queryable, bool include = true)
@@ -43,7 +43,7 @@ namespace septa.Auth.Domain.Repository
         }
 
 
-        
+
 
 
         public static IQueryable<Client> IncludeDetails(this IQueryable<Client> queryable, bool include = true)
