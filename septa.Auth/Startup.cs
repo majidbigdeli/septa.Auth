@@ -59,7 +59,7 @@ namespace septa.Auth
             {
                 options.Authority = siteSettings.Authority; //Configuration.GetSection("Authority").Value;
                 options.RequireHttpsMetadata = false;
-                options.Audience = "api.sample";
+                options.Audience = "PerformanceEvaluation";
             });
 
             services.AddCors(options =>

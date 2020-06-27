@@ -6,6 +6,8 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using septa.Auth.Domain.Entities;
+using septa.Auth.Domain.Interface;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -16,14 +18,14 @@ namespace septa.Auth.Domain.Services
 {
     public class SeptaResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        protected SignInManager<IdentityUser> SignInManager { get; }
+        protected IApplicationSignInManager SignInManager { get; }
         protected IEventService Events { get; }
-        protected UserManager<IdentityUser> UserManager { get; }
+        protected IApplicationUserManager UserManager { get; }
         protected ILogger<ResourceOwnerPasswordValidator<IdentityUser>> Logger { get; }
 
         public SeptaResourceOwnerPasswordValidator(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            IApplicationUserManager userManager,
+            IApplicationSignInManager signInManager,
             IEventService events,
             ILogger<ResourceOwnerPasswordValidator<IdentityUser>> logger
             )
@@ -63,34 +65,34 @@ namespace septa.Auth.Domain.Services
 
                     return;
                 }
-                    else if (result.IsLockedOut)
-                    {
-                        Logger.LogInformation("Authentication failed for username: {username}, reason: locked out", context.UserName);
-                        await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "locked out", interactive: false));
-                        errorDescription = "UserLockedOut";
-                    }
-                    else if (result.IsNotAllowed)
-                    {
-                        Logger.LogInformation("Authentication failed for username: {username}, reason: not allowed", context.UserName);
-                        await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "not allowed", interactive: false));
-                        errorDescription = "LoginIsNotAllowed";
-                    }
-                    else
-                    {
-                        Logger.LogInformation("Authentication failed for username: {username}, reason: invalid credentials", context.UserName);
-                        await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid credentials", interactive: false));
-                        errorDescription = "InvalidUserNameOrPassword";
-                    }
+                else if (result.IsLockedOut)
+                {
+                    Logger.LogInformation("Authentication failed for username: {username}, reason: locked out", context.UserName);
+                    await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "locked out", interactive: false));
+                    errorDescription = "UserLockedOut";
+                }
+                else if (result.IsNotAllowed)
+                {
+                    Logger.LogInformation("Authentication failed for username: {username}, reason: not allowed", context.UserName);
+                    await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "not allowed", interactive: false));
+                    errorDescription = "LoginIsNotAllowed";
                 }
                 else
                 {
-                    Logger.LogInformation("No user found matching username: {username}", context.UserName);
-                    await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid username", interactive: false));
-                    errorDescription = "InvalidUsername";
+                    Logger.LogInformation("Authentication failed for username: {username}, reason: invalid credentials", context.UserName);
+                    await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid credentials", interactive: false));
+                    errorDescription = "InvalidUserNameOrPassword";
                 }
-
-                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, errorDescription);
             }
+            else
+            {
+                Logger.LogInformation("No user found matching username: {username}", context.UserName);
+                await Events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid username", interactive: false));
+                errorDescription = "InvalidUsername";
+            }
+
+            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, errorDescription);
+        }
 
 
         protected virtual async Task ReplaceEmailToUsernameOfInputIfNeeds(
@@ -100,7 +102,7 @@ namespace septa.Auth.Domain.Services
                 return;
             if (await this.UserManager.FindByNameAsync(context.UserName).ConfigureAwait(false) != null)
                 return;
-            IdentityUser identityUser = await this.UserManager.FindByEmailAsync(context.UserName).ConfigureAwait(false);
+            var identityUser = await UserManager.FindByEmailAsync(context.UserName).ConfigureAwait(false);
             if (identityUser == null)
                 return;
             context.UserName = identityUser.UserName;
@@ -108,7 +110,7 @@ namespace septa.Auth.Domain.Services
 
         protected virtual Task AddCustomClaimsAsync(
           List<Claim> customClaims,
-          IdentityUser user,
+          User user,
           ResourceOwnerPasswordValidationContext context)
         {
             //user.TenantId.HasValue
@@ -126,37 +128,6 @@ namespace septa.Auth.Domain.Services
         }
 
 
-        //protected virtual async Task ReplaceEmailToUsernameOfInputIfNeeds(ResourceOwnerPasswordValidationContext context)
-        //{
-        //    if (!ValidationHelper.IsValidEmailAddress(context.UserName))
-        //    {
-        //        return;
-        //    }
-
-        //    var userByUsername = await UserManager.FindByNameAsync(context.UserName);
-        //    if (userByUsername != null)
-        //    {
-        //        return;
-        //    }
-
-        //    var userByEmail = await UserManager.FindByEmailAsync(context.UserName);
-        //    if (userByEmail == null)
-        //    {
-        //        return;
-        //    }
-
-        //    context.UserName = userByEmail.UserName;
-        //}
-
-        //protected virtual Task AddCustomClaimsAsync(List<Claim> customClaims, IdentityUser user, ResourceOwnerPasswordValidationContext context)
-        //{
-        //    if (user.TenantId.HasValue)
-        //    {
-        //        customClaims.Add(new Claim(AbpClaimTypes.TenantId, user.TenantId?.ToString()));
-        //    }
-
-        //    return Task.CompletedTask;
-        //}
 
     }
 
@@ -177,3 +148,4 @@ namespace septa.Auth.Domain.Services
     }
 
 }
+
