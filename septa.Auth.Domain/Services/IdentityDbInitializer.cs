@@ -244,7 +244,7 @@ namespace septa.Auth.Domain.Services
             };
 
             await CreateApiResourceAsync("PerformanceEvaluation", commonApiUserClaims);
-
+            await CreateApiScopeAsync("PerformanceEvaluation");
         }
 
         private async Task<ApiScope> CreateApiScopeAsync(string name)
@@ -261,8 +261,8 @@ namespace septa.Auth.Domain.Services
                 apiScope = await _apiScopeRepository.InsertAsync(
                 new ApiScope()
                 {
-                    DisplayName = "PerformanceEvaluation API",
-                    Name = "PerformanceEvaluation",
+                    DisplayName = name + " API",
+                    Name = name,
                     Emphasize = false,
                     Enabled = true,
                     Required = false,
