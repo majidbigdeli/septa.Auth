@@ -240,7 +240,9 @@ namespace septa.Auth.Domain.Services
                 "email_verified",
                 "name",
                 "phone_number",
+                "role",
                 "phone_number_verified",
+                "RRRRRRRRRRRR"
             };
 
             await CreateApiResourceAsync("PerformanceEvaluation", commonApiUserClaims);
@@ -251,7 +253,7 @@ namespace septa.Auth.Domain.Services
         {
             var apiScopeClaims = new[]
             {
-                "role"
+                "scopClaimTest"
             };
 
             var apiScope = await _apiScopeRepository.FindByNameAsync(name);
@@ -271,13 +273,13 @@ namespace septa.Auth.Domain.Services
             }
 
 
-            foreach (var claim in apiScopeClaims)
-            {
-                if (apiScope.FindClaim(claim) == null)
-                {
-                    apiScope.AddUserClaim(claim);
-                }
-            }
+           foreach (var claim in apiScopeClaims)
+           {
+               if (apiScope.FindClaim(claim) == null)
+               {
+                   apiScope.AddUserClaim(claim);
+               }
+           }
             
             return await _apiScopeRepository.UpdateAsync(apiScope, true);
 

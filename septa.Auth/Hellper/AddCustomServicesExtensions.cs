@@ -82,6 +82,7 @@ namespace septa.Auth.Hellper
             services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
             services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
             services.AddTransient<ICancellationTokenProvider, HttpContextCancellationTokenProvider>();
+            services.AddTransient<IHybridServiceScopeFactory, DefaultServiceScopeFactory>();
 
             services.AddTransient<IApiResourceRepository, ApiResourceRepository>();
             services.AddTransient<IApiScopeRepository, ApiScopeRepository>();

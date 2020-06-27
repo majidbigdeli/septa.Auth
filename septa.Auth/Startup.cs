@@ -1,6 +1,5 @@
 using AutoMapper;
 using DNTCommon.Web.Core;
-using IdentityModel;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,7 +16,6 @@ using septa.Auth.Domain.Services;
 using septa.Auth.Domain.Settings;
 using septa.Auth.Hellper;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace septa.Auth
 {
@@ -42,10 +40,10 @@ namespace septa.Auth
 
             services.AddRequiredEfInternalServices(siteSettings);
 
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["UserId"] = JwtClaimTypes.Subject;
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["UserName"] = JwtClaimTypes.Name;
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["Role"] = JwtClaimTypes.Role;
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["Email"] = JwtClaimTypes.Email;
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["UserId"] = JwtClaimTypes.Subject;
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["UserName"] = JwtClaimTypes.Name;
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["Role"] = JwtClaimTypes.Role;
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["Email"] = JwtClaimTypes.Email;
 
             services.AddAuthentication(o =>
             {
@@ -81,9 +79,9 @@ namespace septa.Auth
                 .AddProfileService<AspNetIdentityProfileService>()
                 .AddResourceOwnerValidator<SeptaResourceOwnerPasswordValidator>()
                 .AddClientStore<ClientStore>()
-                .AddResourceStore<ResourceStore>()
-                .AddCorsPolicyService<AbpCorsPolicyService>();
-           //  .AddExtensionGrantValidator<AuthenticationGrant>();
+                .AddResourceStore<ResourceStore>();
+               // .AddCorsPolicyService<CorsPolicyService>();
+               //  .AddExtensionGrantValidator<AuthenticationGrant>();
 
             services.Replace(ServiceDescriptor.Transient<IClaimsService, SeptaClaimsService>());
 
@@ -108,22 +106,22 @@ namespace septa.Auth
             }).AddControllersAsServices();
 
 
-            services.AddSwaggerGen(  options =>
-    {
-        options.SwaggerDoc("v1", new OpenApiInfo { Title = "PerformanceEvaluation API", Version = "v1" });
-        options.DocInclusionPredicate((docName, description) => true);
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-        {
-            Description = "Swagger Api",
-            Name = "Authorization",
-            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.OAuth2,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            Flows = new Microsoft.OpenApi.Models.OpenApiOAuthFlows() { Password = new Microsoft.OpenApi.Models.OpenApiOAuthFlow() { TokenUrl = new Uri($"{siteSettings.Authority}/connect/token") } }
-        });
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
+            services.AddSwaggerGen(options =>
+  {
+      options.SwaggerDoc("v1", new OpenApiInfo { Title = "PerformanceEvaluation API", Version = "v1" });
+      options.DocInclusionPredicate((docName, description) => true);
+      options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+      {
+          Description = "Swagger Api",
+          Name = "Authorization",
+          In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+          Type = Microsoft.OpenApi.Models.SecuritySchemeType.OAuth2,
+          Scheme = "bearer",
+          BearerFormat = "JWT",
+          Flows = new Microsoft.OpenApi.Models.OpenApiOAuthFlows() { Password = new Microsoft.OpenApi.Models.OpenApiOAuthFlow() { TokenUrl = new Uri($"{siteSettings.Authority}/connect/token") } }
+      });
+      options.AddSecurityRequirement(new OpenApiSecurityRequirement
+      {
                         {
                          new OpenApiSecurityScheme
                             {
@@ -131,8 +129,8 @@ namespace septa.Auth
                              },
                              new string[] {}
                         }
-        });
-    });
+      });
+  });
 
 
             services.AddAutoMapper(
@@ -163,7 +161,7 @@ namespace septa.Auth
 
             app.ApplicationServices.InitializeDb();
 
-         //   InitializeDatabase(app);
+            //   InitializeDatabase(app);
 
             app.UseCors("default");
             app.UseIdentityServer();
