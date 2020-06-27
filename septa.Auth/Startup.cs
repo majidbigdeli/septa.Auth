@@ -86,7 +86,7 @@ namespace septa.Auth
                 .AddClientStore<ClientStore>()
                 .AddResourceStore<ResourceStore>()
                 .AddCorsPolicyService<AbpCorsPolicyService>();
-            // .AddExtensionGrantValidator<AuthenticationGrant>();
+           //  .AddExtensionGrantValidator<AuthenticationGrant>();
 
             services.Replace(ServiceDescriptor.Transient<IClaimsService, SeptaClaimsService>());
 
