@@ -99,7 +99,7 @@ namespace septa.Auth
             {
                 options.UseYeKeModelBinder();
                 options.AllowEmptyInputInBodyModelBinding = true;
-
+                options.EnableEndpointRouting = false;
                 // options.Filters.Add(new NoBrowserCacheAttribute());
             }).AddJsonOptions(jsonOptions =>
             {
@@ -162,6 +162,7 @@ namespace septa.Auth
 
             app.ApplicationServices.InitializeDb();
 
+            app.UseStaticFiles();
             //   InitializeDatabase(app);
 
             app.UseCors("default");
@@ -179,12 +180,14 @@ namespace septa.Auth
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
+          //  app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseMvcWithDefaultRoute();
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
         }
     }
 }
